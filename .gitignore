@@ -1,0 +1,61 @@
+# ===================================================
+# .gitignore — Bot RAG Documents Juridiques Arabes
+# ===================================================
+
+# ---- Variables d'environnement (TRÈS IMPORTANT — ne jamais commiter) ----
+.env
+*.env
+!.env.example
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+*.pyo
+
+# ---- ChromaDB (base vectorielle locale) ----
+backend/chroma_db/
+
+# ---- PDFs uploadés ----
+backend/uploads/
+
+# ---- Modèles ML téléchargés (lourds) ----
+*.bin
+*.safetensors
+*.onnx
+.cache/
+huggingface/
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- Node.js (Frontend) ----
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/build/
+
+# ---- IDEs ----
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---- Tests ----
+.pytest_cache/
+.coverage
+htmlcov/
