@@ -7,8 +7,8 @@ import json
 
 
 class Settings(BaseSettings):
-    # --- OpenAI ---
-    OPENAI_API_KEY: str
+    # --- OpenAI (optionnel — requis uniquement pour les PDFs scannés) ---
+    OPENAI_API_KEY: str = ""  # Laisser vide pour utiliser uniquement PyMuPDF
 
     # --- Ollama ---
     OLLAMA_BASE_URL: str = "http://localhost:11434"

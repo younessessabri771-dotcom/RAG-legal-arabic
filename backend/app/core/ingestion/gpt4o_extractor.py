@@ -34,8 +34,20 @@ class GPT4oExtractor:
     """
 
     def __init__(self):
-        self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        self._client = None  # Initialisé à la demande (lazy)
         self.pdf_extractor = PDFExtractor()
+
+    @property
+    def client(self):
+        """Crée le client OpenAI seulement quand nécessaire."""
+        if self._client is None:
+            if not settings.OPENAI_API_KEY:
+                raise ValueError(
+                    "OPENAI_API_KEY non configurée. Ajoutez votre clé dans backend/.env "
+                    "pour traiter les PDFs scannés. Les PDFs textuels fonctionnent sans clé."
+                )
+            self._client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        return self._client
 
     def _encode_image_base64(self, img: Image.Image) -> str:
         """Encode une image PIL en base64 string pour l'API OpenAI."""
