@@ -457,6 +457,25 @@ body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.source-excerpt-full {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.source-card-expanded {
+  border-color: var(--gold-primary) !important;
+  background: var(--bg-hover) !important;
+}
+
+.source-toggle {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 /* ---- Input Bar ---- */

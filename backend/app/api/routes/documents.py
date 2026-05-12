@@ -132,9 +132,12 @@ async def upload_document(
         )
 
     # Sauvegarde du fichier
+    # IMPORTANT: On utilise uniquement l'UUID comme nom de fichier sur disque
+    # pour éviter les problèmes d'encodage avec les noms arabes sur Windows.
     document_id = str(uuid.uuid4())
-    safe_filename = file.filename.replace(" ", "_")
-    pdf_path = Path(settings.UPLOAD_DIR) / f"{document_id}_{safe_filename}"
+    original_filename = file.filename  # Nom original gardé pour l'affichage
+    safe_filename = file.filename.replace(" ", "_")  # Pour affichage uniquement
+    pdf_path = Path(settings.UPLOAD_DIR) / f"{document_id}.pdf"  # UUID uniquement
 
     with open(pdf_path, "wb") as f:
         f.write(content)
@@ -142,12 +145,12 @@ async def upload_document(
     # Enregistrement dans le registre
     _documents_registry[document_id] = {
         "document_id": document_id,
-        "filename": safe_filename,
+        "filename": safe_filename,          # Nom original pour l'affichage
         "status": "queued",
         "page_count": 0,
         "chunk_count": 0,
         "uploaded_at": datetime.utcnow().isoformat(),
-        "pdf_path": str(pdf_path),
+        "pdf_path": str(pdf_path),          # Chemin avec UUID uniquement
     }
 
     # Lancement de l'ingestion en arrière-plan

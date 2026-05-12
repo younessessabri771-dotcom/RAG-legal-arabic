@@ -80,7 +80,7 @@ async def query(request: ChatRequest):
         SourceReference(
             document_name=chunk["metadata"].get("document_name", ""),
             page_number=chunk["metadata"].get("page_number", 0),
-            chunk_text=chunk["text"][:300] + "..." if len(chunk["text"]) > 300 else chunk["text"],
+            chunk_text=chunk["text"],
             relevance_score=chunk.get("rerank_score", chunk.get("score", 0.0)),
         )
         for chunk in reranked

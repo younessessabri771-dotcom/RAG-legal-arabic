@@ -15,13 +15,14 @@ logger = logging.getLogger(__name__)
 # Prompt système spécialisé pour les questions juridiques arabes
 # Indique au LLM comment répondre à partir des contextes fournis
 RAG_PROMPT_TEMPLATE = """أنت مساعد قانوني متخصص في القانون المغربي والعربي.
-مهمتك هي الإجابة على الأسئلة القانونية بناءً على الوثائق المقدمة إليك فقط.
+مهمتك هي الإجابة على الأسئلة القانونية بناءً على الوثائق المقدمة إليك.
 
 قواعد مهمة:
-- استخدم فقط المعلومات الواردة في السياق أدناه
-- إذا لم تجد الجواب في السياق، قل: "لم أجد معلومات كافية في الوثائق المتاحة"
+- استخدم المعلومات الواردة في السياق أدناه للإجابة
 - اذكر رقم المادة أو الفصل عند الاقتضاء
-- كن دقيقاً وموجزاً في إجابتك
+- إذا كانت المعلومات في السياق جزئية، أجب بما هو متاح وأشر إلى ذلك
+- إذا لم تجد أي معلومة ذات صلة مطلقاً، قل: "لم أجد معلومات كافية في الوثائق المتاحة"
+- كن دقيقاً ومفصلاً في إجابتك
 - يمكنك الإجابة بالعربية أو الفرنسية حسب لغة السؤال
 
 السياق من الوثائق القانونية:
@@ -43,8 +44,9 @@ class LLMGenerator:
             base_url=settings.OLLAMA_BASE_URL,
             model=settings.OLLAMA_MODEL,
             temperature=0.1,     # Faible pour des réponses juridiques précises
-            num_ctx=8192,        # Contexte max (8K tokens)
-            num_predict=2048,    # Longueur max de la réponse
+            num_ctx=4096,        # Augmenté pour contenir le contexte arabe dense
+            num_predict=1024,    # Augmenté pour des réponses complètes
+            num_thread=8,        # Utilise tous les cœurs CPU disponibles
             verbose=False,
         )
         self.prompt = PromptTemplate(
@@ -80,6 +82,8 @@ class LLMGenerator:
         if not chunks:
             return "لم أجد وثائق مفهرسة. يرجى تحميل وثائق قانونية أولاً."
 
+        # 5 chunks pour un meilleur contexte (était 3)
+        chunks = chunks[:5]
         context = self._format_context(chunks)
         logger.info(
             f"Génération réponse: {len(chunks)} chunks, "

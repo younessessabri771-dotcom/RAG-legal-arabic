@@ -10,6 +10,7 @@ from openai import OpenAI
 
 from app.config import settings
 from app.core.ingestion.extractor import PDFExtractor
+from app.core.ingestion.ocr_cache import get_cached_pages, save_to_cache
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ SYSTEM_PROMPT = """أنت محلل متخصص في استخراج النصوص �
 6. تجاهل الرؤوس والتذييلات المتكررة (أرقام الصفحات، اسم الوثيقة)
 أعد النص المستخرج فقط، بدون تعليقات أو مقدمات."""
 
-USER_PROMPT = "استخرج كل النص الموجود في هذه الصفحة من الوثيقة القانونية."
+USER_PROMPT = "استخرج كل النص الموجود في هذه الوثيقة القانونية."
 
 
 class GPT4oExtractor:
@@ -110,6 +111,7 @@ class GPT4oExtractor:
     ) -> List[Tuple[int, str]]:
         """
         Extrait le texte de toutes les pages d'un PDF.
+        Vérifie d'abord le cache local avant d'appeler GPT-4o (payant).
 
         Args:
             pdf_path: Chemin vers le fichier PDF
@@ -117,6 +119,13 @@ class GPT4oExtractor:
         Returns:
             Liste de tuples (numéro_page, texte_extrait)
         """
+        # ----------------------------------------------------------------
+        # Vérification du cache — évite de payer GPT-4o pour un doublon
+        # ----------------------------------------------------------------
+        cached = get_cached_pages(pdf_path)
+        if cached is not None:
+            return cached
+
         logger.info(f"Début extraction GPT-4o: {pdf_path}")
 
         # Conversion PDF → images
@@ -135,4 +144,11 @@ class GPT4oExtractor:
         logger.info(
             f"Extraction terminée: {len(results)}/{len(page_images)} pages traitées"
         )
+
+        # ----------------------------------------------------------------
+        # Sauvegarde dans le cache pour les prochaines insertions
+        # ----------------------------------------------------------------
+        if results:
+            save_to_cache(pdf_path, results)
+
         return results
