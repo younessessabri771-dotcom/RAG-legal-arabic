@@ -10,7 +10,7 @@ const SUGGESTIONS = [
   'ما هي أسباب فسخ العقد؟',
 ];
 
-export default function ChatWindow({ messages, isLoading, onSend, onClearChat }) {
+export default function ChatWindow({ messages, isLoading, onSend, onClearChat, selectedCollectionIds = [] }) {
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -19,6 +19,18 @@ export default function ChatWindow({ messages, isLoading, onSend, onClearChat })
 
   return (
     <div className="chat-area">
+      {/* Bandeau collections sélectionnées */}
+      {selectedCollectionIds.length > 0 ? (
+        <div className="col-target-banner">
+          🎯 Question ciblée sur {selectedCollectionIds.length} collection{selectedCollectionIds.length > 1 ? 's' : ''}
+          &nbsp;— {selectedCollectionIds.length * 5} chunks max au LLM
+        </div>
+      ) : (
+        <div className="col-target-banner col-target-banner--warn">
+          ⚠️ Aucune collection sélectionnée — recherche dans toute la base
+        </div>
+      )}
+
       <div className="chat-messages">
         {messages.length === 0 ? (
           <div className="empty-chat">

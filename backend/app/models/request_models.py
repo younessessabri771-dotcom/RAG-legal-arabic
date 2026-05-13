@@ -2,7 +2,7 @@
 request_models.py — Schémas Pydantic pour les requêtes entrantes
 """
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 
 class ChatRequest(BaseModel):
@@ -21,7 +21,11 @@ class ChatRequest(BaseModel):
         default=5,
         ge=1,
         le=20,
-        description="Nombre de chunks à retourner"
+        description="Nombre de chunks à retourner par collection"
+    )
+    collection_ids: Optional[List[str]] = Field(
+        default=None,
+        description="IDs des Document Collections cibles (None = toute la base)"
     )
 
 

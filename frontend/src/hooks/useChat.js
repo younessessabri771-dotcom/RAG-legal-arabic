@@ -1,4 +1,4 @@
-// hooks/useChat.js — Gestion de l'état du chat
+// hooks/useChat.js — Gestion de l'état du chat avec support multi-collections
 import { useState, useCallback, useRef } from 'react';
 import { sendQuery } from '../services/api';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,7 +16,7 @@ export const useChat = () => {
     ]);
   }, []);
 
-  const sendMessage = useCallback(async (question) => {
+  const sendMessage = useCallback(async (question, selectedCollectionIds = null) => {
     if (!question.trim() || isLoading) return;
 
     // Ajout du message utilisateur
@@ -25,7 +25,13 @@ export const useChat = () => {
     setError(null);
 
     try {
-      const response = await sendQuery(question, sessionId.current);
+      // Envoyer les collection_ids sélectionnés (null = recherche globale)
+      const collectionIds =
+        selectedCollectionIds && selectedCollectionIds.length > 0
+          ? selectedCollectionIds
+          : null;
+
+      const response = await sendQuery(question, sessionId.current, 5, collectionIds);
       addMessage('assistant', response.answer, response.sources || []);
     } catch (err) {
       const msg = err.response?.data?.detail || err.message || 'Erreur serveur';

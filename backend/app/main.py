@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.api.routes import documents, chat, health
+from app.api.routes import documents, chat, health, collections
 from app.core.embedding.embedder import embedder
 from app.core.retrieval.reranker import reranker
 
@@ -82,6 +82,7 @@ app.add_middleware(
 
 # ---- Routes ----
 app.include_router(documents.router)
+app.include_router(collections.router)
 app.include_router(chat.router)
 app.include_router(health.router)
 

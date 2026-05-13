@@ -39,6 +39,7 @@ class VectorStore:
         self,
         chunks: List[dict],
         document_id: str,
+        collection_id: Optional[str] = None,
     ) -> int:
         """
         Ajoute des chunks dans ChromaDB.
@@ -67,11 +68,14 @@ class VectorStore:
             ids.append(chunk_id)
             documents.append(chunk["text"])
             embeddings.append(embedding)
-            metadatas.append({
+            meta = {
                 **chunk["metadata"],
                 "document_id": document_id,
                 "indexed_at": datetime.utcnow().isoformat(),
-            })
+            }
+            if collection_id:
+                meta["collection_id"] = collection_id
+            metadatas.append(meta)
 
         self.collection.add(
             ids=ids,
@@ -88,6 +92,7 @@ class VectorStore:
         query: str,
         top_k: int = None,
         document_id: Optional[str] = None,
+        collection_id: Optional[str] = None,
     ) -> List[Dict]:
         """
         Recherche les chunks les plus similaires à une question.
@@ -96,6 +101,7 @@ class VectorStore:
             query: Question de l'utilisateur
             top_k: Nombre de résultats à retourner
             document_id: Filtrer par document spécifique (optionnel)
+            collection_id: Filtrer par collection (optionnel)
 
         Returns:
             Liste de chunks avec scores de similarité
@@ -103,7 +109,12 @@ class VectorStore:
         top_k = top_k or settings.TOP_K_RETRIEVAL
         query_embedding = embedder.embed_query(query)
 
-        where_filter = {"document_id": document_id} if document_id else None
+        if document_id:
+            where_filter = {"document_id": document_id}
+        elif collection_id:
+            where_filter = {"collection_id": collection_id}
+        else:
+            where_filter = None
 
         results = self.collection.query(
             query_embeddings=[query_embedding],
@@ -145,6 +156,25 @@ class VectorStore:
             self.collection.delete(ids=ids_to_delete)
             logger.info(
                 f"Suppression de {len(ids_to_delete)} chunks pour document {document_id}"
+            )
+        return len(ids_to_delete)
+
+    def delete_collection(self, collection_id: str) -> int:
+        """
+        Supprime tous les chunks appartenant à une collection.
+
+        Returns:
+            Nombre de chunks supprimés
+        """
+        results = self.collection.get(
+            where={"collection_id": collection_id},
+            include=["documents"],
+        )
+        ids_to_delete = results["ids"]
+        if ids_to_delete:
+            self.collection.delete(ids=ids_to_delete)
+            logger.info(
+                f"Suppression de {len(ids_to_delete)} chunks pour collection {collection_id}"
             )
         return len(ids_to_delete)
 

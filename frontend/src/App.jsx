@@ -3,18 +3,17 @@ import { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 import Header from './components/Layout/Header';
-import UploadZone from './components/Documents/UploadZone';
-import DocumentList from './components/Documents/DocumentList';
 import ChatWindow from './components/Chat/ChatWindow';
+import CollectionAccordion from './components/Collections/CollectionAccordion';
 import { useChat } from './hooks/useChat';
 
 export default function App() {
   const { messages, isLoading, sendMessage, clearChat } = useChat();
-  const [refreshDocs, setRefreshDocs] = useState(0);
+  // IDs des collections cochées (cibles du chat)
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState([]);
 
-  const handleUploaded = () => {
-    // Rafraîchit la liste des documents après un upload
-    setRefreshDocs((n) => n + 1);
+  const handleSend = (question) => {
+    sendMessage(question, selectedCollectionIds);
   };
 
   return (
@@ -37,19 +36,19 @@ export default function App() {
 
         {/* Sidebar */}
         <aside className="sidebar">
-          <div className="sidebar-section-title">📤 Upload Document</div>
-          <UploadZone onUploaded={handleUploaded} />
-
-          <div className="sidebar-section-title">📚 Documents Indexés</div>
-          <DocumentList refreshTrigger={refreshDocs} />
+          <CollectionAccordion
+            selectedCollectionIds={selectedCollectionIds}
+            onSelectionChange={setSelectedCollectionIds}
+          />
         </aside>
 
         {/* Zone de chat */}
         <ChatWindow
           messages={messages}
           isLoading={isLoading}
-          onSend={sendMessage}
+          onSend={handleSend}
           onClearChat={clearChat}
+          selectedCollectionIds={selectedCollectionIds}
         />
       </div>
     </>

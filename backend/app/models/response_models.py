@@ -57,3 +57,34 @@ class HealthResponse(BaseModel):
     chroma_connected: bool
     embedding_model_loaded: bool
     version: str = "1.0.0"
+
+
+# --- Document Collections ---
+
+class CollectionDocumentInfo(BaseModel):
+    document_id: str
+    filename: str
+    page_count: int
+    chunk_count: int
+    uploaded_at: datetime
+    status: str  # "indexed", "processing", "error"
+
+
+class CollectionInfo(BaseModel):
+    collection_id: str
+    name: str
+    document_count: int
+    created_at: datetime
+    documents: List[CollectionDocumentInfo] = Field(default_factory=list)
+
+
+class CollectionCreateResponse(BaseModel):
+    success: bool
+    message: str
+    collection_id: str
+    name: str
+
+
+class CollectionListResponse(BaseModel):
+    collections: List[CollectionInfo]
+    total: int
