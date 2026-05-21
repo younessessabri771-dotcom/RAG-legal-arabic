@@ -53,7 +53,7 @@ class DeleteResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str
-    ollama_connected: bool
+    groq_connected: bool
     chroma_connected: bool
     embedding_model_loaded: bool
     version: str = "1.0.0"

@@ -10,7 +10,11 @@ class Settings(BaseSettings):
     # --- OpenAI (optionnel — requis uniquement pour les PDFs scannés) ---
     OPENAI_API_KEY: str = ""  # Laisser vide pour utiliser uniquement PyMuPDF
 
-    # --- Ollama ---
+    # --- Groq (LLM Rapide) ---
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+
+    # --- Ollama (conservé pour fallback / usage local) ---
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "qwen2.5:7b"
 

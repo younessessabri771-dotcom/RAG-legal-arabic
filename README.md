@@ -33,7 +33,7 @@
 - [x] `core/embedding/embedder.py` — BGE-M3 Singleton, préfixes `query:` / `passage:`
 - [x] `core/retrieval/vector_store.py` — ChromaDB persistant, similarité cosine
 - [x] `core/retrieval/reranker.py` — BGE-Reranker-v2-M3, fallback sur score ChromaDB
-- [x] `core/generation/llm.py` — Qwen2.5:7b via Ollama, prompt système en arabe
+- [x] `core/generation/llm.py` — Llama 3.3-70B via Groq, prompt système en arabe
 
 ### Frontend — React/Vite
 - [x] `App.jsx` — Layout sidebar + zone chat
@@ -57,7 +57,7 @@
 |---|---------|---------|-----------|
 | 1 | `AUTO_DETECT_EXTRACTION=false` dans `.env` mais `OPENAI_API_KEY` est un placeholder (`sk-VOTRE_CLE_ICI`) → **tous les uploads plantent** | `backend/.env` ligne 7 et 36 | Mettre `AUTO_DETECT_EXTRACTION=true` **OU** renseigner une vraie clé OpenAI |
 | 2 | **Poppler** requis par `pdf2image` mais non installé par défaut sur Windows → plantage à l'upload de PDF scanné | Système | Installer Poppler et l'ajouter au PATH |
-| 3 | **Ollama + Qwen2.5** doivent être lancés avant le backend sinon toutes les requêtes chat échouent | Système | `ollama pull qwen2.5:7b` puis `ollama serve` |
+| 3 | **Clé API Groq** doit être configurée dans `.env` sinon les requêtes chat échouent | `backend/.env` | Renseigner `GROQ_API_KEY` |
 
 ### 🟡 Moyen — Impact fonctionnel partiel
 
@@ -83,18 +83,12 @@
 
 ### ⚡ Correction `.env` préalable obligatoire
 ```bash
-# Dans backend/.env — changer la ligne 36 :
-AUTO_DETECT_EXTRACTION=true   # ← false → true (évite GPT-4o sans clé valide)
+# Dans backend/.env — vérifier :
+AUTO_DETECT_EXTRACTION=true   # évite GPT-4o sans clé valide
+GROQ_API_KEY=gsk_...           # clé API Groq (gratuit sur console.groq.com)
 ```
 
-### Étape 1 — Ollama (LLM local)
-```bash
-# Installer Ollama depuis https://ollama.com/download
-ollama pull qwen2.5:7b
-ollama serve
-```
-
-### Étape 2 — Backend
+### Étape 1 — Backend
 ```bash
 cd "RAG project/backend"
 
@@ -152,9 +146,9 @@ Question Utilisateur                                         │
     │                                                        │
 ArabicNormalizer ──→ BGE-M3 embed_query ──→ ChromaDB (Top-20)
                                                     │
-                                        BGE-Reranker-v2-M3 (Top-5)
+                                         BGE-Reranker-v2-M3 (Top-5)
                                                     │
-                                        Qwen2.5:7b via Ollama
+                                         Llama 3.3-70B via Groq
                                                     │
                                     Réponse + Sources (doc + page + score)
 ```
@@ -171,7 +165,7 @@ ArabicNormalizer ──→ BGE-M3 embed_query ──→ ChromaDB (Top-20)
 | **Embeddings** | BGE-M3 (BAAI, gratuit) | ✅ Opérationnel |
 | **Base Vectorielle** | ChromaDB (persistant) | ✅ Opérationnel |
 | **Reranker** | BGE-Reranker-v2-M3 (gratuit) | ✅ Avec fallback |
-| **LLM** | Qwen2.5-7B via Ollama | ⚠️ Ollama requis |
+| **LLM** | Llama 3.3-70B via Groq (API cloud) | ✅ Clé API gratuite |
 | **Backend** | FastAPI + Uvicorn | ✅ Opérationnel |
 | **Frontend** | React 19 + Vite 8 | ✅ Opérationnel |
 
