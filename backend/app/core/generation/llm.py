@@ -1,10 +1,10 @@
 """
-llm.py — Génération de réponses avec Qwen2.5 via Ollama (Gratuit, Local)
+llm.py — Génération de réponses avec Groq via langchain-groq
 Utilise LangChain pour l'intégration et la gestion du prompt juridique arabe
 """
 import logging
-from typing import List, Dict, AsyncGenerator
-from langchain_community.llms import Ollama
+from typing import List, Dict
+from langchain_groq import ChatGroq
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 
@@ -36,18 +36,15 @@ RAG_PROMPT_TEMPLATE = """أنت مساعد قانوني متخصص في القا
 
 class LLMGenerator:
     """
-    Génère des réponses aux questions juridiques en utilisant Qwen2.5 via Ollama.
+    Génère des réponses aux questions juridiques en utilisant Groq.
     """
 
     def __init__(self):
-        self.llm = Ollama(
-            base_url=settings.OLLAMA_BASE_URL,
-            model=settings.OLLAMA_MODEL,
+        # Utilisation de Groq via langchain_groq
+        self.llm = ChatGroq(
+            model_name=settings.GROQ_MODEL,
+            groq_api_key=settings.GROQ_API_KEY,
             temperature=0.1,     # Faible pour des réponses juridiques précises
-            num_ctx=4096,        # Augmenté pour contenir le contexte arabe dense
-            num_predict=1024,    # Augmenté pour des réponses complètes
-            num_thread=8,        # Utilise tous les cœurs CPU disponibles
-            verbose=False,
         )
         self.prompt = PromptTemplate(
             template=RAG_PROMPT_TEMPLATE,
@@ -73,7 +70,7 @@ class LLMGenerator:
         Génère une réponse à partir de la question et des chunks pertinents.
 
         Args:
-            question: Question de l'utilisateur (arabe ou français)
+            question: Question de l'utilisateur (arabe أو français)
             chunks: Chunks re-classés par le reranker
 
         Returns:
@@ -82,11 +79,11 @@ class LLMGenerator:
         if not chunks:
             return "لم أجد وثائق مفهرسة. يرجى تحميل وثائق قانونية أولاً."
 
-        # 5 chunks pour un meilleur contexte (était 3)
+        # 5 chunks pour un meilleur contexte
         chunks = chunks[:5]
         context = self._format_context(chunks)
         logger.info(
-            f"Génération réponse: {len(chunks)} chunks, "
+            f"Génération réponse avec Groq: {len(chunks)} chunks, "
             f"contexte={len(context)} chars"
         )
 
@@ -95,24 +92,15 @@ class LLMGenerator:
                 "context": context,
                 "question": question,
             })
-            return response.strip()
+            # ChatGroq retourne un objet AIMessage, on extrait le contenu
+            return response.content.strip()
         except Exception as e:
-            logger.error(f"Erreur génération LLM: {e}")
-            if "connection" in str(e).lower():
-                raise ConnectionError(
-                    "Ollama non accessible. Vérifiez qu'Ollama est démarré : "
-                    "`ollama serve` puis `ollama pull qwen2.5:7b`"
-                )
-            raise
+            logger.error(f"Erreur génération LLM Groq: {e}")
+            raise Exception(f"Erreur de communication avec Groq: {e}")
 
     def is_ollama_available(self) -> bool:
-        """Vérifie si Ollama est accessible."""
-        try:
-            import httpx
-            resp = httpx.get(f"{settings.OLLAMA_BASE_URL}/api/tags", timeout=3)
-            return resp.status_code == 200
-        except Exception:
-            return False
+        """Ancienne méthode conservée par compatibilité mais non utilisée ici."""
+        return True
 
 
 # Instance globale

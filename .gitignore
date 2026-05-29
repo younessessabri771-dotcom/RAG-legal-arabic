@@ -29,7 +29,9 @@ pip-wheel-metadata/
 backend/chroma_db/
 
 # ---- PDFs uploadés ----
-backend/uploads/
+backend/uploads/*
+!backend/uploads/9fe1d628-612b-4ee9-b0a5-a1c683820124/
+!backend/uploads/9fe1d628-612b-4ee9-b0a5-a1c683820124/2ecfe18a-a9d8-44ed-bceb-46c788e5298d.pdf
 
 # ---- Modèles ML téléchargés (lourds) ----
 *.bin

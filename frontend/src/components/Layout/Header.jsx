@@ -23,7 +23,7 @@ export default function Header({ onClearChat }) {
         <div className="header-logo-icon">⚖️</div>
         <div>
           <div className="header-title">RAG Legal Bot</div>
-          <div className="header-subtitle">مساعد الوثائق القانونية</div>
+          <div className="header-subtitle">مستشارك القانوني الذكي</div>
         </div>
       </div>
       <div className="header-spacer" />

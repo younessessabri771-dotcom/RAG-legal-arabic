@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from app.models.response_models import HealthResponse
 from app.core.embedding.embedder import embedder
 from app.core.retrieval.vector_store import vector_store
-from app.core.generation.llm import llm_generator
+from app.config import settings
 
 router = APIRouter(prefix="/api", tags=["Health"])
 
@@ -15,7 +15,7 @@ async def health_check():
     """
     Vérifie l'état de tous les composants du système RAG.
     """
-    ollama_ok = llm_generator.is_ollama_available()
+    groq_ok = bool(settings.GROQ_API_KEY)
     chroma_ok = True
     try:
         _ = vector_store.total_chunks
@@ -23,8 +23,8 @@ async def health_check():
         chroma_ok = False
 
     return HealthResponse(
-        status="ok" if (ollama_ok and chroma_ok and embedder.is_loaded) else "degraded",
-        ollama_connected=ollama_ok,
+        status="ok" if (groq_ok and chroma_ok and embedder.is_loaded) else "degraded",
+        groq_connected=groq_ok,
         chroma_connected=chroma_ok,
         embedding_model_loaded=embedder.is_loaded,
     )
