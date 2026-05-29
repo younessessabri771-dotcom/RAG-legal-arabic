@@ -48,6 +48,44 @@ async def lifespan(app: FastAPI):
     reranker.load_model()
     logger.info("✅ BGE-Reranker chargé")
 
+    # Verification / Auto-indexation de la première collection si absente de ChromaDB
+    try:
+        from app.core.retrieval.vector_store import vector_store
+        collection_id = "9fe1d628-612b-4ee9-b0a5-a1c683820124"
+        doc_id = "2ecfe18a-a9d8-44ed-bceb-46c788e5298d"
+        pdf_name = "مدونة_السير_على_الطرق1.pdf"
+        pdf_path = Path(settings.UPLOAD_DIR) / collection_id / f"{doc_id}.pdf"
+
+        # Compter les chunks pour ce document dans ChromaDB
+        existing_chunks = vector_store.collection.get(
+            where={"document_id": doc_id},
+            include=[]
+        )
+
+        if not existing_chunks or len(existing_chunks.get("ids", [])) == 0:
+            if pdf_path.exists():
+                logger.info(f"⚙️ Auto-indexation de la collection de test: {pdf_name}...")
+                from app.core.ingestion.pymupdf_text_extractor import PyMuPDFTextExtractor
+                from app.core.ingestion.arabic_normalizer import ArabicNormalizer
+                from app.core.ingestion.chunker import ArabicChunker
+
+                extractor = PyMuPDFTextExtractor()
+                normalizer = ArabicNormalizer()
+                chunker = ArabicChunker()
+
+                # Ingestion locale rapide et gratuite
+                pages = extractor.extract_all_pages(str(pdf_path))
+                normalized_pages = [(p_num, normalizer.normalize(txt)) for p_num, txt in pages]
+                chunks = chunker.chunk_document(normalized_pages, pdf_name)
+                vector_store.add_chunks(chunks, doc_id, collection_id=collection_id)
+                logger.info("✅ Collection de test auto-indexée avec succès !")
+            else:
+                logger.warning(f"⚠️ PDF de test introuvable à l'emplacement : {pdf_path}")
+        else:
+            logger.info("ℹ️ La collection de test est déjà indexée dans ChromaDB.")
+    except Exception as startup_err:
+        logger.error(f"❌ Erreur lors de l'auto-indexation au démarrage : {startup_err}")
+
     logger.info("✅ Système prêt ! API disponible sur http://localhost:8000")
     logger.info("📖 Documentation Swagger : http://localhost:8000/docs")
 

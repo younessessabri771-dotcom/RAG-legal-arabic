@@ -4,10 +4,9 @@ import MessageBubble from './MessageBubble';
 import InputBar from './InputBar';
 
 const SUGGESTIONS = [
-  'ما هي شروط إبرام العقد؟',
-  'ما هي حقوق المتهم في القانون؟',
-  'اشرح مفهوم التقادم في القانون المدني',
-  'ما هي أسباب فسخ العقد؟',
+  'ما هو السن القانوني الأدنى لسياقة الدراجات من صنف "أم" (AM)؟',
+  'ما هما الاختباران اللذان يجتازهما المترشح بنجاح للحصول على رخصة السياقة؟',
+  'إلى من يجب على السائق الإدلاء برخصة سياقته له؟',
 ];
 
 export default function ChatWindow({ messages, isLoading, onSend, onClearChat, selectedCollectionIds = [] }) {
@@ -35,7 +34,7 @@ export default function ChatWindow({ messages, isLoading, onSend, onClearChat, s
         {messages.length === 0 ? (
           <div className="empty-chat">
             <div className="empty-chat-icon">⚖️</div>
-            <h2 className="empty-chat-title">مساعد الوثائق القانونية</h2>
+            <h2 className="empty-chat-title">مستشارك القانوني الذكي</h2>
             <p className="empty-chat-subtitle">
               ابدأ بتحميل وثائقك القانونية من الشريط الجانبي، ثم اطرح أسئلتك هنا.
             </p>

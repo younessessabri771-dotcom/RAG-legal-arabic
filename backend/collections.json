@@ -16,33 +16,5 @@
         "extraction_method": "gpt4o"
       }
     }
-  },
-  "2e9e8f84-d0ee-4d05-8be0-bce47e7a5f68": {
-    "collection_id": "2e9e8f84-d0ee-4d05-8be0-bce47e7a5f68",
-    "name": "مؤسسة الاعمال الاجتماعية لموظفي وزارة الاقتصاد والمالية",
-    "document_count": 2,
-    "created_at": "2026-05-13T18:25:35.058765",
-    "documents": {
-      "d2871a6b-526e-4979-83bd-91dddf62c8a4": {
-        "document_id": "d2871a6b-526e-4979-83bd-91dddf62c8a4",
-        "filename": "AMTJ-parents.pdf",
-        "status": "indexed",
-        "page_count": 2,
-        "chunk_count": 29,
-        "uploaded_at": "2026-05-13T18:26:19.176341",
-        "pdf_path": "uploads\\2e9e8f84-d0ee-4d05-8be0-bce47e7a5f68\\d2871a6b-526e-4979-83bd-91dddf62c8a4.pdf",
-        "extraction_method": "gpt4o"
-      },
-      "b4a3ef1e-f4c3-4e8e-9fe1-1f77c0563228": {
-        "document_id": "b4a3ef1e-f4c3-4e8e-9fe1-1f77c0563228",
-        "filename": "cir_01-retraite_complémentaire_1.pdf",
-        "status": "indexed",
-        "page_count": 1,
-        "chunk_count": 9,
-        "uploaded_at": "2026-05-13T18:28:33.375730",
-        "pdf_path": "uploads\\2e9e8f84-d0ee-4d05-8be0-bce47e7a5f68\\b4a3ef1e-f4c3-4e8e-9fe1-1f77c0563228.pdf",
-        "extraction_method": "gpt4o"
-      }
-    }
   }
 }
