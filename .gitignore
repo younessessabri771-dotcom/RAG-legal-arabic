@@ -62,3 +62,8 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+
+# ---- Fichiers Markdown (Sauf README) ----
+*.md
+!README.md
+!**/README.md
