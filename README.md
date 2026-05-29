@@ -46,7 +46,7 @@ Système de **Retrieval-Augmented Generation (RAG)** pour indexer et interroger 
 ### 1. Variables d'Environnement (`backend/.env`)
 ```env
 AUTO_DETECT_EXTRACTION=true
-GROQ_API_KEY=gsk_votre_cle_groq
+GROQ_API_KEY=gsk_le_cle_groq
 ```
 
 ### 2. Backend
